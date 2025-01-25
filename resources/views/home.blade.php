@@ -9,7 +9,7 @@
                 </div>
                 <div class="panel-body">
                     <div class="text-center">
-                        <a href="{[ route('folders.create') ]}" class="btn btn-primary">
+                        <a href="{{ route('folders.create') }}" class="btn btn-primary">
                             フォルダ作成ページへ
                         </a>
                     </div>

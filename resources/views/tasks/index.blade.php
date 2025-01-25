@@ -17,8 +17,9 @@
                     </a>
                 </div>
                 <div class="list-group">
-                    <table class="table foler-table">
+                    <table class="table folder-table">
                         @foreach($folders as $folder)
+                        @if ($folder->user_id === Auth::user()->id)
                             <tr>
                                 <td>
                                     <a href="{{ route('tasks.index', ['id' => $folder->id]) }}"
@@ -29,6 +30,7 @@
                                 <td><a href="{{ route('folders.edit', ['id' => $folder->id]) }}">編集</a></td>
                                 <td><a href="{{ route('folders.delete', ['id' => $folder->id]) }}">削除</a></td>
                             </tr>
+                            @endif
                         @endforeach
                     </table>
                 </div>
