@@ -10,6 +10,7 @@ use Illuminate\Validation\Rules\Password;
 
 class PasswordController extends Controller
 {
+    protected $redirectTo = RouteServiceProvider::HOME;
     /**
      * Update the user's password.
      */

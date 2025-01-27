@@ -54,7 +54,8 @@ class TaskController extends Controller
     {
         $user = Auth::user();
         $folder = $user->folders()->findOrFail($id);
-        $task = $folder->find($task_id);
+        $task = Task::where('folder_id', $folder->id)
+            ->findOrFail($task_id);
 
         return view('tasks/edit', [
             'task' => $task,
@@ -64,7 +65,8 @@ class TaskController extends Controller
     {
         $user = Auth::user();
         $folder = $user->folders()->findOrFail($id);
-        $task = $folder->find($task_id);
+        $task = Task::where('folder_id', $folder->id)
+            ->findOrFail($task_id);
 
         $task->title = $request->title;
         $task->status = $request->status;
@@ -78,7 +80,9 @@ class TaskController extends Controller
 
     public function showDeleteForm(int $id, int $task_id)
     {
-        $task = Task::find($task_id);
+        $user = Auth::user();
+        $folder = $user->folders()->findOrFail($id);
+        $task = $folder->tasks()->findOrFail($task_id);
 
         return view('tasks/delete', [
             'task' => $task,
@@ -87,12 +91,14 @@ class TaskController extends Controller
 
     public function delete(int $id, int $task_id)
     {
-        $task = Task::find($task_id);
+        $user = Auth::user();
+        $folder = $user->folders()->findOrFail($id);
+        $task = $folder->tasks()->findOrFail( $task_id );
 
         $task->delete();
 
         return redirect()->route('tasks.index', [
-            'id' => $id
+            'id' => $task->folder_id
         ]);
     }
 }

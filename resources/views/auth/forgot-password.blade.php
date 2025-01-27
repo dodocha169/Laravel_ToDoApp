@@ -1,25 +1,40 @@
-<x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
+@extends('layout')
+@section('content')
+<div class="container">
+    <div class="row">
+        <div class="col col-md-offset-3 col-md-6">
+            <nav class="panel panel-default">
+                <div class="panel-heading">パスワード再発行</div>
+                <div class="panel-body">
+                    @if (session('status'))
+                    <div class="alert alert-success" role="alert">
+                        {{ session('status') }}
+                    </div>
+                    @endif
+                    @if ($errors->any())
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach ($errors->all() as $message)
+                                    <li>{{ $message }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+                    <form action="{{ route('password.email') }}" method="POST">
+                        @csrf
+                        <div class="form-group">
+                            <label for="email">メールアドレス</label>
+                            <input type="text" class="form-control" id="email" name="email" />
+                        </div>
+                        <div class="text-right">
+                            <button type="submit" class="btn btn-primary">再発行リンクを送る</button>
+                        </div>
+                    </form>
+                </div>
+            </nav>
+        </div>
     </div>
+</div>
 
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+@endsection
 
-    <form method="POST" action="{{ route('password.email') }}">
-        @csrf
-
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Email Password Reset Link') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
