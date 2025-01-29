@@ -11,12 +11,10 @@ use App\Models\Task;
 
 class TaskController extends Controller
 {
-    public function index(int $id)
+    public function index(Folder $folder)
     {
-        $folders = Folder::all();
-
-        $folder = Folder::find($id);
-
+        $user = auth()->user();
+        $folders = $user->folders()->get();
         $tasks = $folder->tasks()->get();
 
         return view('tasks/index', [
@@ -25,20 +23,20 @@ class TaskController extends Controller
             'tasks' => $tasks
         ]);
     }
-    public function showCreateForm(int $id)
+    public function showCreateForm(Folder $folder)
     {
         $user = Auth::user();
-        $folder = $user->folders()->findOrFail($id);
+        $folder = $user->folders()->findOrFail($folder->id);
 
         return view('tasks/create', [
-            'folder_id' => $id
+            'folder_id' => $folder->id,
         ]);
     }
 
-    public function create(int $id, CreateTask $request)
+    public function create(Folder $folder, CreateTask $request)
     {
         $user = Auth::user();
-        $folder = $user->folders()->findOrFail($id);
+        $folder = $user->folders()->findOrFail($folder->id);
 
         $task = new Task();
         $task->title = $request->title;
@@ -46,27 +44,27 @@ class TaskController extends Controller
         $folder->tasks()->save($task);
 
         return redirect()->route('tasks.index', [
-            'id' => $folder->id,
+            'folder' => $folder->id,
         ]);
     }
 
-    public function showEditForm(int $id, int $task_id)
+    public function showEditForm(Folder $folder, Task $task)
     {
+        $this->checkRelation($folder,$task);
         $user = Auth::user();
-        $folder = $user->folders()->findOrFail($id);
-        $task = Task::where('folder_id', $folder->id)
-            ->findOrFail($task_id);
+        $folder = $user->folders()->findOrFail($folder->id);
+        $task = $folder->tasks()->findOrFail($task->id);
 
         return view('tasks/edit', [
             'task' => $task,
         ]);
     }
-    public function edit(int $id, int $task_id, EditTask $request)
+    public function edit(Folder $folder, Task $task, EditTask $request)
     {
+        $this->checkRelation($folder,$task);
         $user = Auth::user();
-        $folder = $user->folders()->findOrFail($id);
-        $task = Task::where('folder_id', $folder->id)
-            ->findOrFail($task_id);
+        $folder = $user->folders()->findOrFail($folder->id);
+        $task = $folder->tasks()->findOrFail($task->id);
 
         $task->title = $request->title;
         $task->status = $request->status;
@@ -74,31 +72,41 @@ class TaskController extends Controller
         $task->save();
 
         return redirect()->route('tasks.index', [
-            'id' => $task->folder_id,
+            'folder' => $task->folder_id,
         ]);
     }
 
-    public function showDeleteForm(int $id, int $task_id)
+    public function showDeleteForm(Folder $folder, Task $task)
     {
+        $this->checkRelation($folder,$task);
         $user = Auth::user();
-        $folder = $user->folders()->findOrFail($id);
-        $task = $folder->tasks()->findOrFail($task_id);
+        $folder = $user->folders()->findOrFail($folder->id);
+        $task = $folder->tasks()->findOrFail($task->id);
 
         return view('tasks/delete', [
             'task' => $task,
         ]);
     }
 
-    public function delete(int $id, int $task_id)
+    public function delete(Folder $folder, Task $task)
     {
+        $this->checkRelation($folder,$task);
         $user = Auth::user();
-        $folder = $user->folders()->findOrFail($id);
-        $task = $folder->tasks()->findOrFail( $task_id );
+        $folder = $user->folders()->findOrFail($folder->id);
+        $task = $folder->tasks()->findOrFail( $task->id );
 
         $task->delete();
 
         return redirect()->route('tasks.index', [
-            'id' => $task->folder_id
+            'folder' => $task->folder_id
         ]);
+    }
+
+    public function checkRelation(Folder $folder,Task $task)
+    {
+        if($folder->id !== $task->folder_id)
+        {
+            abort(404);
+        }
     }
 }
