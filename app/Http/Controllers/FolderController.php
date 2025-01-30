@@ -18,9 +18,11 @@ class FolderController extends Controller
             $user = Auth::user();
             $user->folders;
 
-            return view('folders/create');
+            return view
+            ('folders/create');
         } catch (\Throwable $e) {
-            Log::error('Error FolderController in showCreateForm: ' . $e->getMessage());
+            Log::error
+            ('Error FolderController in showCreateForm: ' . $e->getMessage());
         }
     }
 
@@ -32,11 +34,13 @@ class FolderController extends Controller
             $user = Auth::user();
             $user->folders()->save($folder);
 
-            return redirect()->route('tasks.index', [
+            return redirect()->route
+            ('tasks.index', [
                 'folder' => $folder->id,
             ]);
         } catch (\Exception $e) {
-            Log::error('Error FolderController in create: ' . $e->getMessage());
+            Log::error
+            ('Error FolderController in create: ' . $e->getMessage());
         }
 
     }
@@ -61,15 +65,18 @@ class FolderController extends Controller
     {
         try {
             $user = Auth::user();
-            $folder = $user->folders()->findOrFail($folder->id);
+            $folder
+            = $user->folders()->findOrFail($folder->id);
             $folder->title = $request->title;
             $folder->save();
 
-            return redirect()->route('tasks.index', [
+            return redirect()->route
+            ('tasks.index', [
                 'folder' => $folder->id,
             ]);
         } catch (\Throwable $e) {
-            Log::error('Error FolderController in edit: ' . $e->getMessage());
+            Log::error
+            ('Error FolderController in edit: ' . $e->getMessage());
         }
     }
 
@@ -77,14 +84,17 @@ class FolderController extends Controller
     {
         try {
             $user = Auth::user();
-            $folder = $user->folders()->findOrFail($folder->id);
+            $folder
+            = $user->folders()->findOrFail($folder->id);
 
-            return view('folders/delete', [
+            return view
+            ('folders/delete', [
                 'folder_id' => $folder->id,
                 'folder_title' => $folder->title,
             ]);
         } catch (\Throwable $e) {
-            Log::error('Error in showDeleteForm: ' . $e->getMessage());
+            Log::error
+            ('Error in showDeleteForm: ' . $e->getMessage());
         }
     }
 
@@ -92,31 +102,25 @@ class FolderController extends Controller
     {
         try {
             $user = Auth::user();
-            $folder = $user->folders()->findOrFail($folder->id);
+            $folder
+            = $user->folders()->findOrFail($folder->id);
 
-            $folder = DB::transaction(function () use ($folder) {
-                if ($folder)
-                    throw new \Exception('500');
+            $folder = DB::transaction
+            (function () use ($folder)
+            {;
                 $folder->tasks()->delete();
                 $folder->delete();
                 return $folder;
             });
             $folder = Folder::first();
 
-            return redirect()->route('tasks.index', [
+            return redirect()->route
+            ('tasks.index', [
                 'folder' => $folder->id
             ]);
         } catch (\Throwable $e) {
-            Log::error('Error FolderController in delete: ' . $e->getMessage());
+            Log::error
+            ('Error FolderController in delete: ' . $e->getMessage());
         }
-
-        $folder->tasks()->delete();
-        $folder->delete();
-
-        $folder = Folder::first();
-
-        return redirect()->route('tasks.index', [
-            'folder' => $folder->id,
-        ]);
     }
 }

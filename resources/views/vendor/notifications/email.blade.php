@@ -39,12 +39,14 @@
 @if (! empty($salutation))
 {{ $salutation }}
 @else
-@lang('Regards')<br><br>
+@lang('Regards'),<br><br>
 <p>============================================
-
-開発者 : ToDoApp開発チーム
+<br>
+開発者 : ToDoApp開発チーム<br>
 提供元 : {{ config('app.name') }}
 ============================================</p>
+@endif
+{{ config('app.name') }}
 @endif
 
 {{-- Subcopy --}}
